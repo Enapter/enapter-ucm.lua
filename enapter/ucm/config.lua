@@ -55,7 +55,14 @@ function config.read(name)
   if not ok then
     return nil, 'error reading from storage: '..tostring(value)
   elseif ret and ret ~= 0 then
-    return nil, 'error reading from storage: '..storage.err_to_str(ret)
+    local err = storage.err_to_str(ret)
+    -- FIXME: InternalError is because of a bug in UCM v1.2.1,
+    -- should be removed after bug is fixed.
+    if err == 'NotFound' or err == 'InternalError' then
+      return params.default, nil
+    else
+      return nil, 'error reading from storage: '..err
+    end
   elseif value then
     return config.deserialize(name, value), nil
   else
@@ -68,19 +75,26 @@ end
 -- @return nil|error
 function config.write(name, val)
   local ok, ret = pcall(function()
-    return storage.write(name, config.serialize(name, val))
+    if val == nil then
+      return storage.remove(name)
+    else
+      return storage.write(name, config.serialize(name, val))
+    end
   end)
 
   if not ok then
     return 'error writing to storage: '..tostring(ret)
   elseif ret and ret ~= 0 then
-    return 'error writing to storage: '..storage.err_to_str(ret)
+    local err = storage.err_to_str(ret)
+    if err ~= 'NotFound' then
+      return 'error writing to storage: '..err
+    end
   end
 end
 
 -- Serializes value into string for storage
 function config.serialize(_, value)
-  if value then
+  if value ~= nil then
     return tostring(value)
   else
     return nil
@@ -111,7 +125,7 @@ function config.build_write_configuration_command(options)
   return function(ctx, args)
     for name, params in pairs(options) do
       if params.required then
-        assert(args[name], '`'..name..'` argument required')
+        assert(args[name] ~= nil, '`'..name..'` argument required')
       end
 
       local err = config.write(name, args[name])
