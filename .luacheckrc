@@ -3,7 +3,7 @@
 -- Enapter Rule Engine API
 local enapter_api = {
   enapter = {
-    fields = {'log', 'device'}
+    fields = {'log', 'device', 'register_command_handler'}
   },
   storage = {
     fields = {
