@@ -7,7 +7,7 @@ version = ("%s-%s"):format(rock_version, rock_release)
 
 source = {
   url = "git+https://github.com/Enapter/enapter-ucm.lua.git",
-  branch = rock_version == "scm" and "master" or nil,
+  branch = rock_version == "scm" and "main" or nil,
   tag = rock_version ~= "scm" and "v"..rock_version or nil,
 }
 
