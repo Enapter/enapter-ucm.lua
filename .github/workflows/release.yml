@@ -18,4 +18,4 @@ jobs:
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         run:
-          docker run --rm -v $(pwd):/opt/app -w /opt/app docker.enapter.com/lua/luarocks:5.3 luarocks upload rockspecs/enapter-ucm-${{ steps.vars.outputs.modrev }}-1.rockspec --api-key "${LUAROCKS_API_KEY}"
+          docker run --rm -v $(pwd):/opt/app -w /opt/app imolein/luarocks:5.3-alpine luarocks upload rockspecs/enapter-ucm-${{ steps.vars.outputs.modrev }}-1.rockspec --api-key "${LUAROCKS_API_KEY}"
