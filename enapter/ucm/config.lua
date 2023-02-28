@@ -1,14 +1,29 @@
 local config = {}
 
--- Initializes config options. Registers required UCM commands.
--- @param options: key-value pairs with option name and option params
--- @example
+--- Initializes config options.
+-- Registers required UCM commands to read and write configuration described by options param.
+-- Calls callback functions before and after configuration writing. Callbacks are passed via callbacks param.
+-- @param options key-value pairs with config option names and params.
+-- @param callbacks key-value pairs with callback functions. Supported keys: before_write, after_write.
+-- @usage
 --   config.init({
 --     address = { type = 'string', required = true },
 --     unit_id = { type = 'number', default = 1 },
 --     reconnect = { type = 'boolean', required = true }
 --   })
-function config.init(options)
+-- @usage
+--   config.init({
+--     address = { type = 'string', required = true },
+--     unit_id = { type = 'number', default = 1 },
+--     reconnect = { type = 'boolean', required = true }
+--   }, {
+--     before_write = function(args)
+--       if args.required == nil then
+--         return "required arg is missed"
+--       end
+--     end
+--   })
+function config.init(options, callbacks)
   assert(next(options) ~= nil, 'at least one config option should be provided')
   assert(not config.initialized, 'config can be initialized only once')
   for name, params in pairs(options) do
@@ -16,7 +31,7 @@ function config.init(options)
     assert(type_ok, 'type of `'..name..'` option should be either string or number or boolean')
   end
 
-  enapter.register_command_handler('write_configuration', config.build_write_configuration_command(options))
+  enapter.register_command_handler('write_configuration', config.build_write_configuration_command(options, callbacks))
   enapter.register_command_handler('read_configuration', config.build_read_configuration_command(options))
 
   config.options = options
@@ -121,8 +136,13 @@ function config.deserialize(name, value)
   end
 end
 
-function config.build_write_configuration_command(options)
+function config.build_write_configuration_command(options, callbacks)
   return function(ctx, args)
+    if callbacks ~=nil and callbacks.before_write ~= nil then
+      local err = callbacks.before_write(args)
+      if err then ctx.error('before handler failed: '..err) end
+    end
+
     for name, params in pairs(options) do
       if params.required then
         assert(args[name] ~= nil, '`'..name..'` argument required')
@@ -130,6 +150,11 @@ function config.build_write_configuration_command(options)
 
       local err = config.write(name, args[name])
       if err then ctx.error('cannot write `'..name..'`: '..err) end
+    end
+
+    if callbacks ~=nil and callbacks.after_write ~= nil then
+      local err = callbacks.after_write(args)
+      if err then ctx.error('after handler failed: '..err) end
     end
   end
 end
