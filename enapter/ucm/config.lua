@@ -28,11 +28,17 @@ function config.init(options, callbacks)
   assert(not config.initialized, 'config can be initialized only once')
   for name, params in pairs(options) do
     local type_ok = params.type == 'string' or params.type == 'number' or params.type == 'boolean'
-    assert(type_ok, 'type of `'..name..'` option should be either string or number or boolean')
+    assert(type_ok, 'type of `' .. name .. '` option should be either string or number or boolean')
   end
 
-  enapter.register_command_handler('write_configuration', config.build_write_configuration_command(options, callbacks))
-  enapter.register_command_handler('read_configuration', config.build_read_configuration_command(options))
+  enapter.register_command_handler(
+    'write_configuration',
+    config.build_write_configuration_command(options, callbacks)
+  )
+  enapter.register_command_handler(
+    'read_configuration',
+    config.build_read_configuration_command(options)
+  )
 
   config.options = options
   config.initialized = true
@@ -47,7 +53,7 @@ function config.read_all()
   for name, _ in pairs(config.options) do
     local value, err = config.read(name)
     if err then
-      return nil, 'cannot read `'..name..'`: '..err
+      return nil, 'cannot read `' .. name .. '`: ' .. err
     else
       result[name] = value
     end
@@ -61,14 +67,12 @@ end
 -- @return nil|error
 function config.read(name)
   local params = config.options[name]
-  assert(params, 'undeclared config option: `'..name..'`, declare with config.init')
+  assert(params, 'undeclared config option: `' .. name .. '`, declare with config.init')
 
-  local ok, value, ret = pcall(function()
-    return storage.read(name)
-  end)
+  local ok, value, ret = pcall(function() return storage.read(name) end)
 
   if not ok then
-    return nil, 'error reading from storage: '..tostring(value)
+    return nil, 'error reading from storage: ' .. tostring(value)
   elseif ret and ret ~= 0 then
     local err = storage.err_to_str(ret)
     -- FIXME: InternalError is because of a bug in UCM v1.2.1,
@@ -76,7 +80,7 @@ function config.read(name)
     if err == 'NotFound' or err == 'InternalError' then
       return params.default, nil
     else
-      return nil, 'error reading from storage: '..err
+      return nil, 'error reading from storage: ' .. err
     end
   elseif value then
     return config.deserialize(name, value), nil
@@ -98,12 +102,10 @@ function config.write(name, val)
   end)
 
   if not ok then
-    return 'error writing to storage: '..tostring(ret)
+    return 'error writing to storage: ' .. tostring(ret)
   elseif ret and ret ~= 0 then
     local err = storage.err_to_str(ret)
-    if err ~= 'NotFound' then
-      return 'error writing to storage: '..err
-    end
+    if err ~= 'NotFound' then return 'error writing to storage: ' .. err end
   end
 end
 
@@ -119,7 +121,7 @@ end
 -- Deserializes value from stored string
 function config.deserialize(name, value)
   local params = config.options[name]
-  assert(params, 'undeclared config option: `'..name..'`, declare with config.init')
+  assert(params, 'undeclared config option: `' .. name .. '`, declare with config.init')
 
   if params.type == 'number' then
     return tonumber(value)
@@ -138,23 +140,21 @@ end
 
 function config.build_write_configuration_command(options, callbacks)
   return function(ctx, args)
-    if callbacks ~=nil and callbacks.before_write ~= nil then
+    if callbacks ~= nil and callbacks.before_write ~= nil then
       local err = callbacks.before_write(args)
-      if err then ctx.error('before handler failed: '..err) end
+      if err then ctx.error('before handler failed: ' .. err) end
     end
 
     for name, params in pairs(options) do
-      if params.required then
-        assert(args[name] ~= nil, '`'..name..'` argument required')
-      end
+      if params.required then assert(args[name] ~= nil, '`' .. name .. '` argument required') end
 
       local err = config.write(name, args[name])
-      if err then ctx.error('cannot write `'..name..'`: '..err) end
+      if err then ctx.error('cannot write `' .. name .. '`: ' .. err) end
     end
 
-    if callbacks ~=nil and callbacks.after_write ~= nil then
+    if callbacks ~= nil and callbacks.after_write ~= nil then
       local err = callbacks.after_write(args)
-      if err then ctx.error('after handler failed: '..err) end
+      if err then ctx.error('after handler failed: ' .. err) end
     end
   end
 end
