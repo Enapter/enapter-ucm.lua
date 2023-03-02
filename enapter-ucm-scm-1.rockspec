@@ -23,6 +23,7 @@ dependencies = {
 test_dependencies = {
   'busted',
   'luacov',
+  'luacov-reporter-lcov',
   'inspect',
 }
 
