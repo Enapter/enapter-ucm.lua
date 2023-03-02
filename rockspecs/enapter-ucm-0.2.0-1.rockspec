@@ -1,6 +1,6 @@
 rockspec_format = '3.0'
 package = 'enapter-ucm'
-local rock_version = 'scm'
+local rock_version = '0.2.0'
 local rock_release = '1'
 
 version = ('%s-%s'):format(rock_version, rock_release)

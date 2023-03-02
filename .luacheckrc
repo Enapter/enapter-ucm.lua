@@ -15,6 +15,13 @@ local enapter_api = {
     fields = {
       'new'
     }
+  },
+  modbus = {
+    fields = {
+      'read_coils', 'read_discrete_inputs', 'read_holdings', 'read_inputs',
+      'write_coil', 'write_holding', 'write_multiple_coils', 'write_multiple_holdings',
+      'err_to_str',
+    }
   }
 }
 
