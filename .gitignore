@@ -3,3 +3,5 @@
 /lua_modules
 /.luarocks
 /*.rock
+/lcov.info
+/luacov.stats.out

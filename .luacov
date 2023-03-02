@@ -1,0 +1,8 @@
+reporter = 'lcov'
+reportfile = 'lcov.info'
+
+exclude = {
+  '/usr/local/share/lua',
+  'spec/',
+  '.luarocks/',
+}

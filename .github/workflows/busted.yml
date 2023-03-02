@@ -24,3 +24,11 @@ jobs:
 
       - name: Run tests
         run: luarocks test
+
+      - name: Generate lcov report
+        run: luacov
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v1
+        with:
+          path-to-lcov: lcov.info
