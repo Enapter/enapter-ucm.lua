@@ -140,20 +140,24 @@ end
 
 function config.build_write_configuration_command(options, callbacks)
   return function(ctx, args)
+    local callback_args = {}
+    for name, params in pairs(options) do
+      if params.required then assert(args[name] ~= nil, '`' .. name .. '` argument required') end
+      callback_args[name] = args[name] or params.default
+    end
+
     if callbacks ~= nil and callbacks.before_write ~= nil then
-      local err = callbacks.before_write(args)
+      local err = callbacks.before_write(callback_args)
       if err then ctx.error('before handler failed: ' .. err) end
     end
 
-    for name, params in pairs(options) do
-      if params.required then assert(args[name] ~= nil, '`' .. name .. '` argument required') end
-
+    for name, _ in pairs(options) do
       local err = config.write(name, args[name])
       if err then ctx.error('cannot write `' .. name .. '`: ' .. err) end
     end
 
     if callbacks ~= nil and callbacks.after_write ~= nil then
-      local err = callbacks.after_write(args)
+      local err = callbacks.after_write(callback_args)
       if err then ctx.error('after handler failed: ' .. err) end
     end
   end
