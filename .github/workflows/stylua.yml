@@ -1,4 +1,4 @@
-name: Luacheck
+name: StyLua
 
 on:
   push:
