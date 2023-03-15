@@ -17,7 +17,7 @@ _G.storage = {
   write = function() end,
 }
 
-describe('config tests', function()
+describe('config', function()
   before_each(function()
     package.loaded['enapter.ucm.config'] = false
     config = require('enapter.ucm.config')
@@ -38,7 +38,7 @@ describe('config tests', function()
   end)
 end)
 
-describe('config tests with callbacks', function()
+describe('config with callbacks', function()
   before_each(function()
     package.loaded['enapter.ucm.config'] = false
     config = require('enapter.ucm.config')
@@ -78,5 +78,21 @@ describe('config tests with callbacks', function()
     assert.spy(bw).was_called()
     assert.spy(ce).was_called_with('before handler failed: ' .. errmsg)
     assert.spy(sw).was_not_called()
+  end)
+
+  it('should fill missed options with default value and remove it from storage', function()
+    local callbacks = {
+      before_write = function() end,
+    }
+    config.init({ name = { type = 'string', default = 'test string' } }, callbacks)
+
+    local sr = spy.on(storage, 'remove')
+    local bw = spy.on(callbacks, 'before_write')
+
+    local args = {}
+    local ctx = { error = function(err) error(err) end }
+    cmd_write(ctx, args)
+    assert.spy(bw).was_called_with({ name = 'test string' })
+    assert.spy(sr).was_called_with('name')
   end)
 end)
