@@ -44,6 +44,16 @@ function config.init(options, callbacks)
   config.initialized = true
 end
 
+--- Checks that all config options are set.
+-- @return status true if all options are set or false otherwise.
+function config.is_all_options_set(args)
+  for name, _ in pairs(config.options) do
+    if args[name] == nil then return false end
+  end
+
+  return true
+end
+
 --- Reads all config options.
 -- @return values key-value pairs table for all config options.
 -- @return error string with error message or nil on success.

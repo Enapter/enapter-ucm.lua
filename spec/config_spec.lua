@@ -36,6 +36,11 @@ describe('config', function()
     cmd_write(nil, args)
     assert.spy(s).was_called_with('name', 'test_value')
   end)
+
+  it('should check all options are set or not', function()
+    assert.is_true(config.is_all_options_set({ name = '' }))
+    assert.is_false(config.is_all_options_set({}))
+  end)
 end)
 
 describe('config with callbacks', function()

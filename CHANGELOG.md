@@ -1,3 +1,6 @@
+## 0.2.2 (April 3, 2023)
+* feat(config): check all options are set
+
 ## 0.2.1 (March 15, 2023)
 * bug(config): fill missed options to pass default values to callback
 
