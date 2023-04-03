@@ -18,8 +18,8 @@ local config = {}
 --     reconnect = { type = 'boolean', required = true }
 --   }, {
 --     before_write = function(args)
---       if args.required == nil then
---         return "required arg is missed"
+--       if math.tointeger(args.unit_id) == nil then
+--         return "unit_id must be an integer value"
 --       end
 --     end
 --   })
@@ -44,9 +44,9 @@ function config.init(options, callbacks)
   config.initialized = true
 end
 
--- Reads all initialized config options
--- @return table: key-value pairs
--- @return nil|error
+--- Reads all config options.
+-- @return values key-value pairs table for all config options.
+-- @return error string with error message or nil on success.
 function config.read_all()
   local result = {}
 
