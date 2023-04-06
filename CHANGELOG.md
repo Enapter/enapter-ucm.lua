@@ -1,3 +1,6 @@
+## 0.2.3 (April 6, 2023)
+* feat(config): validate option name length
+
 ## 0.2.2 (April 3, 2023)
 * feat(config): check all options are set
 
