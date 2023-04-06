@@ -30,8 +30,8 @@ test_dependencies = {
 build = {
   type = 'builtin',
   modules = {
-    ['enapter.ucm.config'] = 'enapter/ucm/config.lua',
-    ['enapter.ucm.qmodbus'] = 'enapter/ucm/qmodbus.lua',
+    ['enapter.ucm.config'] = 'src/enapter/ucm/config.lua',
+    ['enapter.ucm.qmodbus'] = 'src/enapter/ucm/qmodbus.lua',
   },
 }
 
