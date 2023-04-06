@@ -41,6 +41,20 @@ describe('config', function()
     assert.is_true(config.is_all_options_set({ name = '' }))
     assert.is_false(config.is_all_options_set({}))
   end)
+
+  it('should not allow to init with empty config', function()
+    assert.has_error(
+      function() config.init({}) end,
+      'at least one config option should be provided'
+    )
+  end)
+
+  it('should not allow to init twice', function()
+    assert.has_error(
+      function() config.init({ new_name = { type = 'number' } }) end,
+      'config can be initialized only once'
+    )
+  end)
 end)
 
 describe('config with callbacks', function()
@@ -99,5 +113,20 @@ describe('config with callbacks', function()
     cmd_write(ctx, args)
     assert.spy(bw).was_called_with({ name = 'test string' })
     assert.spy(sr).was_called_with('name')
+  end)
+end)
+
+describe('config with long options name', function()
+  it('should assert', function()
+    package.loaded['enapter.ucm.config'] = false
+    config = require('enapter.ucm.config')
+
+    local name_with_len_15 = 'abcdefgh1234567'
+    local name_with_len_16 = name_with_len_15 .. '8'
+    assert.has_error(
+      function() config.init({ [name_with_len_16] = { type = 'string' } }) end,
+      'invalid option name `abcdefgh12345678`: length (16) should be less or equal 15'
+    )
+    assert.has_no_error(function() config.init({ [name_with_len_15] = { type = 'string' } }) end)
   end)
 end)

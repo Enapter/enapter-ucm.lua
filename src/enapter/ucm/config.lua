@@ -1,3 +1,4 @@
+local OPTION_NAME_MAX_LEN = 15
 local config = {}
 
 --- Initializes config options.
@@ -27,6 +28,15 @@ function config.init(options, callbacks)
   assert(next(options) ~= nil, 'at least one config option should be provided')
   assert(not config.initialized, 'config can be initialized only once')
   for name, params in pairs(options) do
+    assert(
+      #name <= OPTION_NAME_MAX_LEN,
+      'invalid option name `'
+        .. name
+        .. '`: length ('
+        .. tostring(#name)
+        .. ') should be less or equal '
+        .. tostring(OPTION_NAME_MAX_LEN)
+    )
     local type_ok = params.type == 'string' or params.type == 'number' or params.type == 'boolean'
     assert(type_ok, 'type of `' .. name .. '` option should be either string or number or boolean')
   end
