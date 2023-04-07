@@ -52,3 +52,20 @@ config.init({
 ```
 
 After that commands to read/write config are registered and values can be get in Lua code via `config.read` and `config.read_all` methods.
+
+
+## Generics
+
+`enapter.ucm.generics` provides helpers to communicate with [Enapter Generic-IO](https://marketplace.enapter.com/blueprints/generic_io).
+
+### RL6
+
+```lua
+local rl6 = require('enapter.ucm.generics.rl6')
+
+local power_relay = rl6.new() -- creates a new instance of relay contact
+power_relay:setup('AABBCC', 5) -- setup to operate on contact 5 of generic RL-6 UCM with hardware id AABBCC
+power_relay:open() -- open contact
+power_relay:close() -- close contact
+local power_is_on = power_relay:is_closed() -- check contact status
+```
