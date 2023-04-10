@@ -1,3 +1,7 @@
+## 0.3.0 (April 10, 2023)
+* feat(generics): support can
+* feat(generics): support rl6
+
 ## 0.2.3 (April 6, 2023)
 * feat(config): validate option name length
 
