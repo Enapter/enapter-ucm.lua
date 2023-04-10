@@ -39,7 +39,7 @@ describe('generic rl6', function()
   it('should report state', function()
     rl6:setup('test_state_id', 25)
 
-    peer_stub.execute_command = function() return 'completed', { closed = true } end
+    peer_stub:should_return('execute_command', 'completed', { closed = true })
     local closed, err = rl6:is_closed()
     assert.is_nil(err)
     assert.is_true(closed)
@@ -48,7 +48,7 @@ describe('generic rl6', function()
   it('should return error if state is missed', function()
     rl6:setup('test_err_id', 25)
 
-    peer_stub.execute_command = function() return 'completed', { is_closed = true } end
+    peer_stub:should_return('execute_command', 'completed', { is_closed = true })
     local _, err = rl6:is_closed()
     assert.is_same('unexpected response from io: {is_closed = true}', err)
   end)
@@ -56,28 +56,30 @@ describe('generic rl6', function()
   it('should return error if state is not boolean', function()
     rl6:setup('test_err_id', 25)
 
-    peer_stub.execute_command = function() return 'completed', { closed = 'yes' } end
+    peer_stub:should_return('execute_command', 'completed', { closed = 'yes' })
     local _, err = rl6:is_closed()
     assert.is_same('unexpected response from io: {closed = "yes"}', err)
   end)
 
   it('should return execution error (open)', function()
     rl6:setup()
-    peer_stub.execute_command = function() return nil, nil, 'test exec err' end
+    peer_stub:should_return('execute_command', nil, nil, 'test exec err')
     assert.is_same('test exec err', rl6:open())
   end)
 
   it('should return execution error (close)', function()
     rl6:setup()
-    peer_stub.execute_command = function() return nil, nil, 'test exec err' end
+    peer_stub:should_return('execute_command', nil, nil, 'test exec err')
     assert.is_same('test exec err', rl6:close())
   end)
 
   it('should return non-completed error (open)', function()
     rl6:setup()
-    peer_stub.execute_command = function()
-      return 'non-completed', { errcode = 117, errmsg = 'test open error' }, nil
-    end
+    peer_stub:should_return(
+      'execute_command',
+      'non-completed',
+      { errcode = 117, errmsg = 'test open error' }
+    )
     assert.is_same(
       'relay module command failed: non-completed: {errcode = 117,errmsg = "test open error"}',
       rl6:open()
@@ -87,9 +89,11 @@ describe('generic rl6', function()
   it('should return non-completed error', function()
     rl6:setup()
 
-    peer_stub.execute_command = function()
-      return 'non-completed', { errcode = 428, errmsg = 'test close error' }, nil
-    end
+    peer_stub:should_return(
+      'execute_command',
+      'non-completed',
+      { errcode = 428, errmsg = 'test close error' }
+    )
     assert.is_same(
       'relay module command failed: non-completed: {errcode = 428,errmsg = "test close error"}',
       rl6:close()
