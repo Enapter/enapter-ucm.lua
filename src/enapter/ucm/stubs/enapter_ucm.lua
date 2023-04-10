@@ -1,8 +1,11 @@
+local builder = require('enapter.ucm.stubs.builder')
+
 local function new_dummy_ucm_peer()
   return {
     execute_command = function() return 'completed', {} end,
   }
 end
+new_dummy_ucm_peer = builder.wrap_new(new_dummy_ucm_peer)
 
 local function setup_enapter_ucm()
   local stub = { stubs = {} }

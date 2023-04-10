@@ -8,7 +8,7 @@ describe('generic can', function()
   local function prepare_peer_stub()
     local peer_stub = stubs.new_dummy_ucm_peer()
     ucm_stubs.stubs = { peer_stub }
-    peer_stub.execute_command = function() return 'completed', { cursor = cursor } end
+    peer_stub:should_return('execute_command', 'completed', { cursor = cursor })
     return peer_stub
   end
 
@@ -74,7 +74,7 @@ describe('generic can', function()
     assert.is_nil(can:setup('', { test_can_error = {} }))
 
     local peer_stub = prepare_peer_stub()
-    peer_stub.execute_command = function() return 'completed', nil, 'can error' end
+    peer_stub:should_return('execute_command', 'completed', nil, 'can error')
 
     local _, err = can:get('test_can_error')
     assert.is.equals('command failed: can error', err)
@@ -84,7 +84,7 @@ describe('generic can', function()
     assert.is_nil(can:setup('', { test_non_completed = {} }))
 
     local peer_stub = prepare_peer_stub()
-    peer_stub.execute_command = function() return 'non-completed', { errmsg = 'error msg' } end
+    peer_stub:should_return('execute_command', 'non-completed', { errmsg = 'error msg' })
 
     local _, err = can:get('test_non_completed')
     assert.is.equals('command failed: non-completed: {errmsg = "error msg"}', err)
@@ -107,7 +107,7 @@ describe('generic can', function()
     assert.is_nil(can:setup('', { test_names = messages }))
 
     local peer_stub = prepare_peer_stub()
-    peer_stub.execute_command = function() return 'completed', { results = { { 'r1' }, { 'r2' } } } end
+    peer_stub:should_return('execute_command', 'completed', { results = { { 'r1' }, { 'r2' } } })
 
     local ret, err = can:get('test_names')
     assert.is_nil(err)
@@ -134,9 +134,7 @@ describe('generic can', function()
     assert.is_nil(can:setup('', { test_multi = messages }))
 
     local peer_stub = prepare_peer_stub()
-    peer_stub.execute_command = function()
-      return 'completed', { results = { test_data, test_data } }
-    end
+    peer_stub:should_return('execute_command', 'completed', { results = { test_data, test_data } })
 
     local ret, err = can:get('test_multi')
     assert.is_nil(err)
@@ -156,7 +154,7 @@ describe('generic can', function()
     assert.is_nil(can:setup('', { test_names = messages }))
 
     local peer_stub = prepare_peer_stub()
-    peer_stub.execute_command = function() return 'completed', { results = { { 'any data' } } } end
+    peer_stub:should_return('execute_command', 'completed', { results = { { 'any data' } } })
 
     local _, err = can:get('test_names')
     assert.is_equals(
