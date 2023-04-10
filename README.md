@@ -69,3 +69,63 @@ power_relay:open() -- open contact
 power_relay:close() -- close contact
 local power_is_on = power_relay:is_closed() -- check contact status
 ```
+
+### CAN
+
+```lua
+local can_pkg = require('enapter.ucm.generics.can')
+
+local can = can_pkg.new() -- creates a new instance of client to generic CAN UCM
+local err = can:setup('AABBCC', subscriptions) -- setup to operate with UCM with hardware id AABBCC (about subscriptions see below)
+local payload, err = can:get('telemetry') -- get can messages for 'my_subscription' messages
+```
+
+#### CAN Subscriptions
+Subscriptions is a table:
+  - key is a name of subscritption
+  - value is an array of talbes describig CAN messages parsing rules
+
+The parsing rule contains:
+  - `name` or `names` of parsed values (one CAN message can contain more then one value).
+  - CAN message ID `msg_id`.
+  - `parser` function which received CAN message and return parsed value(s).
+  - `multi_msg` flag if parser function receives array of message.
+
+```lua
+subscriptoins = {
+  example = {
+    { name = 'fw_ver', msg_id = 0x318, parser = software_version },
+    {
+      name = 'dump_0x400',
+      msg_id = 0x400,
+      multi_msg = true,
+      parser = dump_0x400,
+    },
+  }
+}
+
+function dump_0x400(datas)
+  local str_0x400 = nil
+  for _, data in pairs(datas) do
+    str_0x400 = str_0x400 or ''
+    str_0x400 = str_0x400 .. ' ' .. data
+  end
+  return str_0x400
+end
+
+function software_version(data)
+  data = convert_input_data(data)
+  return string.format('%u.%u.%u', string.byte(data, 1), string.byte(data, 2), string.byte(data, 3))
+end
+
+--- Converts message from Generic CAN to bytes
+-- Generic CAN passes message as a 16-char string where every 2 char represent a byte in hex format.
+function convert_input_data(data)
+  local v = { string.unpack('c2c2c2c2c2c2c2c2', data) }
+  local vv = {}
+  for j = 1, 8 do
+    vv[j] = tonumber(v[j], 16)
+  end
+  return string.pack('BBBBBBBB', table.unpack(vv))
+end
+```
