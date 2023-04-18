@@ -70,6 +70,16 @@ power_relay:close() -- close contact
 local power_is_on = power_relay:is_closed() -- check contact status
 ```
 
+### DI7
+
+```lua
+local di7 = require('enapter.ucm.generics.di7')
+
+local input = di7.new() -- creates a new instance of digital input module
+input:setup('AABBCC', 3) -- setup to operate on input 3 of generic DI-7 UCM with hardware id AABBCC
+local closed = input:is_closed() -- check input status
+```
+
 ### CAN
 
 ```lua
