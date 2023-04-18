@@ -1,3 +1,6 @@
+## 0.3.1 (April 18, 2023)
+* feat(generics): support di7
+
 ## 0.3.0 (April 10, 2023)
 * feat(generics): support can
 * feat(generics): support rl6
