@@ -3,6 +3,8 @@ local builder = require('enapter.ucm.stubs.builder')
 local function new_dummy_rl6()
   return {
     setup = function() end,
+    open = function() end,
+    close = function() end,
     is_closed = function() return false end,
   }
 end
