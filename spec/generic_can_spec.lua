@@ -27,8 +27,8 @@ describe('generic can', function()
 
   it('shoud execute read command when setup', function()
     local messages = {
-      { msg_id = 0x123 },
-      { msg_id = 0x789 },
+      { msg_id = 123 },
+      { msg_id = 789 },
     }
     local timeout = math.random(5000)
 
@@ -36,9 +36,7 @@ describe('generic can', function()
     local s = spy.on(peer_stub, 'execute_command')
     assert.is_nil(can:setup('', { test_cmd = messages }, timeout))
     assert.spy(s).was_called(1)
-    assert
-      .spy(s)
-      .was_called_with(peer_stub, 'read', match.same({ msg_ids = { 0x123, 0x789 } }), { timeout = timeout })
+    assert.spy(s).was_called_with(peer_stub, 'read', { msg_ids = '123,789' }, { timeout = timeout })
   end)
 
   it('should store cursor', function()
@@ -51,9 +49,7 @@ describe('generic can', function()
     local _, err = can:get('test_cur')
     assert.is_nil(err)
     assert.spy(s).was_called(1)
-    assert
-      .spy(s)
-      .was_called_with(peer_stub, 'read', match.same({ msg_ids = {} }), { timeout = 1000 })
+    assert.spy(s).was_called_with(peer_stub, 'read', { msg_ids = '' }, { timeout = 1000 })
 
     peer_stub = prepare_peer_stub()
     local s2 = spy.on(peer_stub, 'execute_command')
@@ -62,7 +58,7 @@ describe('generic can', function()
     assert.spy(s2).was_called(1)
     assert
       .spy(s2)
-      .was_called_with(peer_stub, 'read', match.same({ cursor = cursor, msg_ids = {} }), { timeout = 1000 })
+      .was_called_with(peer_stub, 'read', { cursor = cursor, msg_ids = '' }, { timeout = 1000 })
   end)
 
   it('should not get for unknow subscription', function()

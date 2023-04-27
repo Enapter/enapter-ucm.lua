@@ -6,7 +6,7 @@ local function extract_msg_ids(messages)
   for _, msg in ipairs(messages) do
     if msg.msg_id then table.insert(msg_ids, msg.msg_id) end
   end
-  return msg_ids
+  return table.concat(msg_ids, ',')
 end
 
 local can_read = function(self, name)
