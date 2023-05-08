@@ -1,3 +1,6 @@
+## 0.3.2 (May 8, 2023)
+* feat(generic-can): pass msg_ids as coma-separated string
+
 ## 0.3.1 (April 18, 2023)
 * feat(generics): support di7
 
