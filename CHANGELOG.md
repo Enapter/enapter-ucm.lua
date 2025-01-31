@@ -1,3 +1,6 @@
+## 0.4.0 (January 31, 2025)
+* feat(config): support runtime version 3
+
 ## 0.3.2 (May 8, 2023)
 * feat(generic-can): pass msg_ids as coma-separated string
 
