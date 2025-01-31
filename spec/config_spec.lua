@@ -15,6 +15,7 @@ _G.enapter = {
 
 describe('config', function()
   before_each(function()
+    _G.runtime_version = 'v1'
     _G.storage = {
       read = function() return nil, 0 end,
       write = function() return 0 end,
@@ -50,6 +51,14 @@ describe('config', function()
       assert.has_error(function() cmd_read(cmd_ctx) end, errmsg)
     end)
 
+    it('should handle storage read error v3', function()
+      _G.runtime_version = 'v3'
+      _G.storage.read = function() return nil, 'read failed' end
+
+      local errmsg = 'cannot read `name`: error reading from storage: read failed'
+      assert.has_error(function() cmd_read(cmd_ctx) end, errmsg)
+    end)
+
     it('should handle storage read NotFound error', function()
       _G.storage.read = function() return nil, 404 end
 
@@ -58,8 +67,26 @@ describe('config', function()
       assert.spy(s).was_called_with('name')
     end)
 
+    it('should handle storage read NotFound error v3', function()
+      _G.runtime_version = 'v3'
+      _G.storage.read = function() return nil, 'NotFound' end
+
+      local s = spy.on(storage, 'read')
+      cmd_read(cmd_ctx)
+      assert.spy(s).was_called_with('name')
+    end)
+
     it('should handle storage read InternalError error', function()
       _G.storage.read = function() return nil, 500 end
+
+      local s = spy.on(storage, 'read')
+      cmd_read(cmd_ctx)
+      assert.spy(s).was_called_with('name')
+    end)
+
+    it('should handle storage read InternalError error v3', function()
+      _G.runtime_version = 'v3'
+      _G.storage.read = function() return nil, 'InternalError' end
 
       local s = spy.on(storage, 'read')
       cmd_read(cmd_ctx)
@@ -83,8 +110,25 @@ describe('config', function()
       assert.has_error(function() cmd_write(cmd_ctx, args) end, errmsg)
     end)
 
+    it('should handle storage write error v3', function()
+      _G.runtime_version = 'v3'
+      _G.storage.write = function() return 'write failed' end
+
+      local args = { name = 'test_value' }
+      local errmsg = 'cannot write `name`: error writing to storage: write failed'
+      assert.has_error(function() cmd_write(cmd_ctx, args) end, errmsg)
+    end)
+
     it('should handle write NotFound err', function()
       _G.storage.write = function() return 404 end
+
+      local args = { name = 'test_value' }
+      cmd_write(cmd_ctx, args)
+    end)
+
+    it('should handle write NotFound err v3', function()
+      _G.runtime_version = 'v3'
+      _G.storage.write = function() return 'NotFound' end
 
       local args = { name = 'test_value' }
       cmd_write(cmd_ctx, args)
@@ -98,8 +142,25 @@ describe('config', function()
       assert.has_error(function() cmd_write(cmd_ctx, args) end, errmsg)
     end)
 
+    it('should handle storage remove error v3', function()
+      _G.runtime_version = 'v3'
+      _G.storage.remove = function() return 'remove failed' end
+
+      local args = { name = nil }
+      local errmsg = 'cannot write `name`: error writing to storage: remove failed'
+      assert.has_error(function() cmd_write(cmd_ctx, args) end, errmsg)
+    end)
+
     it('should handle remove NotFound err', function()
       _G.storage.remove = function() return 404 end
+
+      local args = { name = nil }
+      cmd_write(cmd_ctx, args)
+    end)
+
+    it('should handle remove NotFound err v3', function()
+      _G.runtime_version = 'v3'
+      _G.storage.remove = function() return 'NotFound' end
 
       local args = { name = nil }
       cmd_write(cmd_ctx, args)

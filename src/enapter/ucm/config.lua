@@ -1,6 +1,14 @@
 local OPTION_NAME_MAX_LEN = 15
 local config = {}
 
+local function storage_err(v)
+  if runtime_version == 'v3' then return v end
+
+  local err = storage.err_to_str(v)
+  if err == '' then err = nil end
+  return err
+end
+
 --- Initializes config options.
 -- Registers required UCM commands to read and write configuration described by options param.
 -- Calls callback functions before and after configuration writing. Callbacks are passed via callbacks param.
@@ -90,11 +98,11 @@ function config.read(name)
   assert(params, 'undeclared config option: `' .. name .. '`, declare with config.init')
 
   local ok, value, ret = pcall(function() return storage.read(name) end)
+  local err = storage_err(ret)
 
   if not ok then
     return nil, 'error reading from storage: ' .. tostring(value)
-  elseif ret and ret ~= 0 then
-    local err = storage.err_to_str(ret)
+  elseif err ~= nil then
     -- FIXME: InternalError is because of a bug in UCM v1.2.1,
     -- should be removed after bug is fixed.
     if err == 'NotFound' or err == 'InternalError' then
@@ -121,11 +129,12 @@ function config.write(name, val)
     end
   end)
 
+  local err = storage_err(ret)
+
   if not ok then
     return 'error writing to storage: ' .. tostring(ret)
-  elseif ret and ret ~= 0 then
-    local err = storage.err_to_str(ret)
-    if err ~= 'NotFound' then return 'error writing to storage: ' .. err end
+  elseif err ~= nil and err ~= 'NotFound' then
+    return 'error writing to storage: ' .. err
   end
 end
 

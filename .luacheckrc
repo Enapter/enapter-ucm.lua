@@ -3,6 +3,7 @@
 -- Enapter Rule Engine API
 local enapter_api = {
   'inspect',
+  'runtime_version',
   enapter = {
     fields = { 'log', 'device', 'register_command_handler' },
   },
