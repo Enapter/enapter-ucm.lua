@@ -1,3 +1,6 @@
+## 0.4.1 (February 14, 2025)
+* bug(config): direct convert ret 0 to nil error
+
 ## 0.4.0 (January 31, 2025)
 * feat(config): support runtime version 3
 
