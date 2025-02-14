@@ -4,6 +4,8 @@ local config = {}
 local function storage_err(v)
   if runtime_version == 'v3' then return v end
 
+  if v == 0 then return nil end
+
   local err = storage.err_to_str(v)
   if err == '' then err = nil end
   return err

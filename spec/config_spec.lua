@@ -22,7 +22,7 @@ describe('config', function()
       remove = function() return 0 end,
       err_to_str = function(ret)
         if ret == 0 then
-          return ''
+          return 'everything is fine'
         elseif ret == 404 then
           return 'NotFound'
         elseif ret == 500 then
